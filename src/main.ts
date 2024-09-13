@@ -1087,7 +1087,7 @@ const startGame = () => {
           `
           <div class="topt opt ${world.money < shelfItem.cost + world.waveCount * 5 ? 'Invalid' : ''}" itemtype="${itemName}">
             <div class="tname">${shelfItem.name} - $${shelfItem.cost + world.waveCount * 5}</div>
-            <img src="/src/assets/${shelfItem.image}">
+            <img src="${import.meta.env.BASE_URL}/src/assets/${shelfItem.image}">
           </div>
         `,
         );
