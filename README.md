@@ -4,11 +4,11 @@ Celestron is a web based procedurally generated tower defense game made by [Iron
 # Building
 To install the dependencies run:
 ```
-yarn install
+yarn install --immutable
 ```
-We use a vite build system with some additional build steps in order to build the project run:
-```bash
-bash build.sh
+after that run:
+```
+yarn build
 ```
 which will output the project to `./dist/` you can run `yarn host` to run the server and host the project.
 
