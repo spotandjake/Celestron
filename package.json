@@ -1,0 +1,33 @@
+{
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "dev": "vite --port 443 --host 0.0.0.0",
+    "build": "vite build && bash build.sh",
+    "preview": "yarn build && yarn host",
+    "lint": "eslint ./src/main.ts",
+    "host": "node server.js"
+  },
+  "dependencies": {
+    "@replit/database": "^2.0.1",
+    "@swc/core": "^1.2.160",
+    "better-replit-db": "^1.1.9",
+    "co-body": "^6.1.0",
+    "cookie-parser": "^1.4.6",
+    "express": "^4.17.3",
+    "howler": "^2.2.3",
+    "node-fetch": "^3.2.3",
+    "p5": "^1.4.1",
+    "vite": "^2.8.6"
+  },
+  "devDependencies": {
+    "@types/howler": "^2.2.7",
+    "@types/p5": "^1.4.1",
+    "@typescript-eslint/eslint-plugin": "^5.16.0",
+    "@typescript-eslint/parser": "^5.16.0",
+    "eslint": "^8.11.0",
+    "sass": "^1.49.9",
+    "typescript": "^4.6.2"
+  }
+}

@@ -1,0 +1,31 @@
+language="nodejs"
+run="yarn host"
+
+entrypoint="./TowerDefense/src/main.ts"
+modules = ["nodejs-20:v8-20230920-bd784b9"]
+
+[languages.typescript]
+pattern = "**/{*.ts,*.js,*.tsx,*.jsx}"
+syntax = "typescript"
+
+[languages.scss]
+pattern = "**/{*.scss,*.sass}"
+syntax = "scss"
+
+[languages.typescript.languageServer]
+start = [ "typescript-language-server", "--stdio" ]
+
+[packager]
+language = "nodejs"
+
+[packager.features]
+enabledForHosting = false
+packageSearch = true
+guessImports = false
+
+[nix]
+channel = "stable-21_11"
+
+[[ports]]
+localPort = 8080
+externalPort = 80
