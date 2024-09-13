@@ -23,7 +23,7 @@ to start a development server.
 # Notes
 We currently hold all our planning documents at `./plans/READmE.md` the project is built using typescript and was built in under a week, as such there are some minor bugs the most notable bugs are:
 ### Worldgen
-The world generation is powered by a custom algorithm similar to wave function collapse but a lot simpler, the algorithm is slightly naive and as such the path can wrap back in on itself preventing future map generation.
+The world generation is powered by a custom algorithm similar to wave function collapse but a lot simpler, the algorithm is slightly naive and as such the path can wrap back in on itself preventing future map generation. The best way I have thought of to fix this is to rework the world generation algorithm to generation chunks with a set entrance and exit side, we can then generate the entire chunk in on a stage using a pathfinding algorithm with random obstacles to create some more unique patterns and show the subcells in between. We would generate these outer cells in a spiral like pattern allowing for a really interesting shape.
 ### Pathfinding
 Currently there is an issue with pathfinding where the enemies can dissapear of certain tiles in certain world states, this is an interesting bug but as it only happens under certain conditions it is not major and can make the game more interesting.
 ### Leaderboard

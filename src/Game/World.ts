@@ -324,7 +324,9 @@ export default class World {
       for (let i = 0; i < 1; i++) {
         try {
           this.addSegment();
-        } catch (err) {}
+        } catch (err) {
+          console.log('Error Adding World Segment');
+        }
       }
     }
   }
