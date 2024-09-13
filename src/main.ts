@@ -1058,7 +1058,7 @@ const startGame = () => {
       )
         return msgBox.classList.add('Hidden');
       const activeMessage = Dialog[world.waveCount][activemessageIndex];
-      msgImage.src = `/src/assets/replers/${activeMessage.image}`;
+      msgImage.src = `${import.meta.env.BASE_URL}/src/assets/replers/${activeMessage.image}`;
       msgName.innerText = activeMessage.name;
       msgText.innerText = activeMessage.message;
       msgBox.classList.remove('Hidden');
