@@ -9,15 +9,18 @@ import Tower from './Tower';
 import Particle from './Particle';
 import AudioEngine from './AudioEngine';
 
-
 const getOppositeSide = (side: Side): Side => {
   switch (side) {
-    case Side.Top: return Side.Bottom;
-    case Side.Bottom: return Side.Top;
-    case Side.Left: return Side.Right;
-    case Side.Right: return Side.Left;
+    case Side.Top:
+      return Side.Bottom;
+    case Side.Bottom:
+      return Side.Top;
+    case Side.Left:
+      return Side.Right;
+    case Side.Right:
+      return Side.Left;
   }
-}
+};
 // TODO: Give Segments Entrance And Exits so that we always have a path back home
 // World Class
 export default class World {
@@ -42,7 +45,7 @@ export default class World {
   public worldSpeedScalar = 1;
   public gameOver: boolean = false;
   // Constructor
-  constructor (audioEngine: AudioEngine) {
+  constructor(audioEngine: AudioEngine) {
     // Initalize Random Generator
     this.audioEngine = audioEngine;
     this.seed = Math.random();
@@ -53,8 +56,7 @@ export default class World {
     for (let i = 0; i < 6; i++) {
       try {
         this.addSegment();
-      } catch (err) {
-      }
+      } catch (err) {}
     }
     // Add Particles as test
   }
@@ -69,23 +71,30 @@ export default class World {
     else if (side == Side.Right) searchX += size ?? segment.height;
     return new Vector(searchX, searchY);
   }
-  public getSegmentSide(side: Side, segment: WorldSegmentContents): WorldSegmentContents | undefined {
+  public getSegmentSide(
+    side: Side,
+    segment: WorldSegmentContents,
+  ): WorldSegmentContents | undefined {
     const position = this.getSideCordinates(side, segment);
     // Search For Enemy
     return this.getSegment(position.x, position.y);
   }
   public getSegment(x: number, y: number): WorldSegmentContents | undefined {
-    return this.WorldSegmentList.find((segment) => (segment.x == x && segment.y == y));
+    return this.WorldSegmentList.find((segment) => segment.x == x && segment.y == y);
   }
   public addSegment(): void {
     // Handle First Segment
     if (this.WorldSegmentList.length == 0) {
       // Generate Segment
-      const spawnSegment = this.segmentRandomizer.nextRandomChoice(segmentTypeList.filter((segment) => {
-        return segment.castlePosition != undefined;
-      }));
+      const spawnSegment = this.segmentRandomizer.nextRandomChoice(
+        segmentTypeList.filter((segment) => {
+          return segment.castlePosition != undefined;
+        }),
+      );
       // Init segment
-      const segment = <WorldSegmentContents>generateWorldSegment(0, 0, Side.Bottom, spawnSegment, this.WorldSegmentList);
+      const segment = <WorldSegmentContents>(
+        generateWorldSegment(0, 0, Side.Bottom, spawnSegment, this.WorldSegmentList)
+      );
       // Spawn Segment
       this.WorldSegmentList.push(segment);
       return;
@@ -95,17 +104,16 @@ export default class World {
       if (connection.freeSide.size != 0 && connection.paths.some((path) => !path.entranceSegment)) {
         for (const path of connection.paths) {
           for (const side of path.pathSides) {
-            if (this.getSegmentSide(side, connection) == undefined)
-              return true;
+            if (this.getSegmentSide(side, connection) == undefined) return true;
           }
-        } 
+        }
       }
       return false;
     });
     // Choose world segment
     const connection = this.segmentRandomizer.nextRandomChoice(viableConnections);
     // Find FreeSides
-    const openSides: ({ path: SegmentPath, side: Side })[] = [];
+    const openSides: { path: SegmentPath; side: Side }[] = [];
     for (const path of connection.paths) {
       if (path.exitSegment || connection.castlePosition != undefined) {
         for (const side of path.pathSides) {
@@ -121,26 +129,26 @@ export default class World {
     const tilePosition = this.getSideCordinates(connectionSide.side, connection);
     // Choose Tile Type
     const viableChoices = segmentTypeList.filter((segment) => {
-      return segment.castlePosition == undefined && segment.paths.some((path) => {
-        if (path.pathSides.has(getOppositeSide(connectionSide.side))) {
-          const predictedSegment = <WorldSegmentContents>{
-            x: tilePosition.x,
-            y: tilePosition.y,
-            width: connection.width,
-            height: connection.height
+      return (
+        segment.castlePosition == undefined &&
+        segment.paths.some((path) => {
+          if (path.pathSides.has(getOppositeSide(connectionSide.side))) {
+            const predictedSegment = <WorldSegmentContents>{
+              x: tilePosition.x,
+              y: tilePosition.y,
+              width: connection.width,
+              height: connection.height,
+            };
+            return [...path.pathSides].every((side) => {
+              return (
+                side == getOppositeSide(connectionSide.side) ||
+                this.getSegmentSide(side, predictedSegment) == undefined
+              );
+            });
           }
-          return [...path.pathSides].every((side) => {
-            return (
-              side == getOppositeSide(connectionSide.side) ||
-              this.getSegmentSide(
-                side,
-                predictedSegment
-              ) == undefined
-            );
-          });
-        }
-        return false;
-      });
+          return false;
+        })
+      );
     });
     // Filter Tile Type
     const choice = this.segmentRandomizer.nextRandomChoice(viableChoices);
@@ -150,7 +158,7 @@ export default class World {
       tilePosition.y,
       connectionSide.side,
       choice,
-      this.WorldSegmentList
+      this.WorldSegmentList,
     );
     if (!generatedChoice) return this.addSegment();
     // Set Tile Path Info
@@ -165,21 +173,34 @@ export default class World {
     // Add World Tile
     this.WorldSegmentList.push(generatedChoice);
   }
-  public getPath(segment: WorldSegmentContents, lastPoint: Vector, lastSegment?: WorldSegmentContents): SegmentPath {
+  public getPath(
+    segment: WorldSegmentContents,
+    lastPoint: Vector,
+    lastSegment?: WorldSegmentContents,
+  ): SegmentPath {
     // Find Closest Point
     let closestDistance = Number.MAX_SAFE_INTEGER;
     let closestPath: SegmentPath | null = null;
     for (const path of segment.paths) {
       const { points } = path;
       // Check First Point
-      const startDistance = lastPoint.distanceToSquared(points[0].clone().add(segment.x, segment.y));
-      let exitSegment = path.exitSegment, entranceSegment = path.entranceSegment;
-        if (path.entranceSegment && lastSegment) {
-          exitSegment = (lastSegment.x == path.entranceSegment.x && lastSegment.y == path.entranceSegment.y) ? path.exitSegment : path.entranceSegment;
-        }
-        if (path.exitSegment && lastSegment) {
-          entranceSegment = (lastSegment.x == path.exitSegment.x && lastSegment.y == path.exitSegment.y) ?  path.entranceSegment : path.exitSegment;
-        }
+      const startDistance = lastPoint.distanceToSquared(
+        points[0].clone().add(segment.x, segment.y),
+      );
+      let exitSegment = path.exitSegment,
+        entranceSegment = path.entranceSegment;
+      if (path.entranceSegment && lastSegment) {
+        exitSegment =
+          lastSegment.x == path.entranceSegment.x && lastSegment.y == path.entranceSegment.y
+            ? path.exitSegment
+            : path.entranceSegment;
+      }
+      if (path.exitSegment && lastSegment) {
+        entranceSegment =
+          lastSegment.x == path.exitSegment.x && lastSegment.y == path.exitSegment.y
+            ? path.entranceSegment
+            : path.exitSegment;
+      }
       if (startDistance < closestDistance) {
         closestDistance = startDistance;
         closestPath = {
@@ -187,11 +208,13 @@ export default class World {
           entranceSegment: entranceSegment,
           exitSegment: exitSegment,
           pathSides: path.pathSides,
-          segment: segment
+          segment: segment,
         };
       }
       // Check Last Point
-      const endDistance = lastPoint.distanceToSquared(points[points.length-1].clone().add(segment.x, segment.y));
+      const endDistance = lastPoint.distanceToSquared(
+        points[points.length - 1].clone().add(segment.x, segment.y),
+      );
       if (endDistance < closestDistance) {
         closestDistance = endDistance;
         closestPath = {
@@ -199,19 +222,18 @@ export default class World {
           entranceSegment: entranceSegment,
           exitSegment: exitSegment,
           pathSides: path.pathSides,
-          segment: segment
+          segment: segment,
         };
       }
     }
-    if (closestPath == null)
-      closestPath = segment.paths[0];
+    if (closestPath == null) closestPath = segment.paths[0];
     return {
       points: closestPath.points.map((vec) => vec.clone().add(segment.x, segment.y)),
       entranceSegment: closestPath.entranceSegment,
       exitSegment: closestPath.exitSegment,
       pathSides: closestPath.pathSides,
-      segment: segment
-    }
+      segment: segment,
+    };
   }
   public newWave(): void {
     if (this.activeWave) return;
@@ -221,26 +243,28 @@ export default class World {
     }
     this.activeWave = true;
     // Determine How Many Enemys There Should Be
-    let difficultyLevel = this.waveCount*this.waveCount;
+    let difficultyLevel = this.waveCount * this.waveCount;
     // Spawn Enemy's
-    if (this.waveCount % 10 == 0 )
-      difficultyLevel += this.waveCount / 10 * 250;
+    if (this.waveCount % 10 == 0) difficultyLevel += (this.waveCount / 10) * 250;
     // Spawn In Normal Enemies
     let i = 0;
     while (difficultyLevel > 0) {
       // Filter to Difficulty
-      let validEnemies = EnemyTypes.filter((e) => {
-        return (e.Difficulty == 1 || e.Difficulty*2 < difficultyLevel) && (this.waveCount % 10 === 0 ? !e.boss : e);
+      const validEnemies = EnemyTypes.filter((e) => {
+        return (
+          (e.Difficulty == 1 || e.Difficulty * 2 < difficultyLevel) &&
+          (this.waveCount % 10 === 0 ? !e.boss : e)
+        );
       });
       // Choose A Random Enemy
       let enemyChoice = this.worldGenerator.nextRandomChoice(validEnemies);
       if (this.waveCount % 10 == 0 && i < this.waveCount / 10) {
         const enemyScale = validEnemies.sort((a, b) => a.Difficulty - b.Difficulty);
-        enemyChoice = enemyScale.find(e => e.Difficulty <= difficultyLevel);
+        enemyChoice = enemyScale.find((e) => e.Difficulty <= difficultyLevel);
       }
       // Find A Start Point
       const openSegments = this.WorldSegmentList.filter((segment) => {
-        return segment.paths.some(path => path.entranceSegment == undefined);
+        return segment.paths.some((path) => path.entranceSegment == undefined);
       });
       const segmentChoice = this.worldGenerator.nextRandomChoice(openSegments);
       // Pick Spawn Side
@@ -257,22 +281,20 @@ export default class World {
       // Subtract Difficulty Points
       difficultyLevel -= enemyChoice.Difficulty;
       // Add Enemy
-      this.bufferEnemys.push(
-        new enemyChoice(pathInformation.points[0], pathInformation)
-      );
+      this.bufferEnemys.push(new enemyChoice(pathInformation.points[0], pathInformation));
       i++;
     }
     // Add One enemy
     this.enemys.set(this.enemys.size, <Enemy>this.bufferEnemys.shift());
   }
   public Update(deltaTime: number, frameCount: number): void {
-    deltaTime = deltaTime/this.worldSpeedScalar;
+    deltaTime = deltaTime / this.worldSpeedScalar;
     // Add buffer enemys
     if (frameCount % 60 == 0 && this.bufferEnemys.length >= 1) {
       this.enemys.set(this.enemys.size, <Enemy>this.bufferEnemys.shift());
     }
     // Update Enemies
-    for (const [ key, enemy ] of this.enemys.entries()) {
+    for (const [key, enemy] of this.enemys.entries()) {
       enemy.Update(deltaTime, this);
       if (enemy.dead) {
         this.enemys.delete(key);
@@ -286,7 +308,7 @@ export default class World {
       }
     }
     // Update Particles
-    for (const [ key, particle ] of this.particles.entries()) {
+    for (const [key, particle] of this.particles.entries()) {
       particle.Update(deltaTime);
       if (particle.dead) {
         this.particles.delete(key);
@@ -296,14 +318,13 @@ export default class World {
     if (this.activeWave && this.enemys.size <= 0 && this.bufferEnemys.length <= 0) {
       // Wave is over
       this.activeWave = false;
-      if(100 - (this.waveCount*5) > 0) this.money += 100 - (this.waveCount*5); // Give you a 100 dolar level completion bonus
+      if (100 - this.waveCount * 5 > 0) this.money += 100 - this.waveCount * 5; // Give you a 100 dolar level completion bonus
       // Add A Segment
       this.waveEnded = true;
       for (let i = 0; i < 1; i++) {
         try {
           this.addSegment();
-        } catch (err) {
-        }
+        } catch (err) {}
       }
     }
   }
@@ -311,14 +332,14 @@ export default class World {
     this.waveEnded = false;
   }
   // Render & Export Function
-  public getContents (): WorldContents {
+  public getContents(): WorldContents {
     return {
       seed: this.seed,
       wave: this.waveCount,
       WorldSegmentList: this.WorldSegmentList,
       enemys: this.enemys,
       particles: this.particles,
-      towers: this.towers
+      towers: this.towers,
     };
   }
 }

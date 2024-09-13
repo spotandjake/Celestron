@@ -8,14 +8,14 @@ export const enum Side {
   Top,
   Bottom,
   Left,
-  Right
+  Right,
 }
 // Target Type
 export const enum TargetType {
   Random,
   Closest,
   Strongest,
-  Farthest
+  Farthest,
 }
 // Specials
 export const enum Specials {
@@ -38,7 +38,7 @@ export const enum BackgroundType {
   RightTurnTopMoon,
   LeftTurnBottomMoon,
   RightTurnBottomMoon,
-  Intersection4WayMoon
+  Intersection4WayMoon,
 }
 // Enemys
 export const enum EnemyType {
@@ -62,11 +62,10 @@ export const enum EnemyType {
   Virus2,
   Ship,
   Boss1,
-  Boss2
+  Boss2,
 }
 // Decorations
 export const enum DecorationType {
-  Path,
   Altar,
   Beacon,
   Database,
@@ -75,7 +74,7 @@ export const enum DecorationType {
   Rocks,
   Satellite,
   Spikes,
-  Tanker
+  Tanker,
 }
 export interface DecorationDefinition {
   decorationType: DecorationType;
@@ -88,7 +87,7 @@ export interface SegmentPath {
   entranceSegment?: WorldSegmentContents;
   exitSegment?: WorldSegmentContents;
   segment?: WorldSegmentContents;
-} 
+}
 export interface WorldSegment {
   width: number;
   height: number;
@@ -96,7 +95,7 @@ export interface WorldSegment {
     x: number,
     y: number,
     side: Side,
-    worldSegmentList: WorldSegmentContents[]
+    worldSegmentList: WorldSegmentContents[],
   ) => boolean;
   backgroundType: BackgroundType;
   castlePosition?: Vector;
@@ -125,11 +124,10 @@ export interface WorldContents {
   towers: Map<number, Tower>;
 }
 
-export const enum ParticleType{
+export const enum ParticleType {
   Fire,
   Smoke,
-  Spark,
   Bullet,
   MgunBullet,
-  RailgunBullet
+  RailgunBullet,
 }

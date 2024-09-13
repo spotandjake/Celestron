@@ -3,11 +3,11 @@ import './style.scss';
 // Import External Libs
 import P5 from 'p5';
 // Import Interal Libs
-import Vector from './Game/Vector'; 
+import Vector from './Game/Vector';
 import World from './Game/World';
 import AudioEngine from './Game/AudioEngine';
 import { Dialog, SpecialsShelf, TowersShelf, StoreItem } from './Game/Data';
-import { BackgroundType, EnemyType, ParticleType, DecorationType , TowerType } from './Game/Types';
+import { BackgroundType, EnemyType, ParticleType, DecorationType, TowerType } from './Game/Types';
 import Tower from './Game/Tower';
 // Dom References
 const menuScene = <HTMLElement>document.getElementById('Menu');
@@ -105,7 +105,7 @@ const enum Texture {
   Tower_Basic_Barrel_1,
   Tower_Basic_Barrel_2,
   Tower_Basic_Barrel_3,
-  
+
   Tower_Machine_Base_0,
   Tower_Machine_Base_1,
   Tower_Machine_Base_2,
@@ -119,7 +119,6 @@ const enum Texture {
   Tower_Machine_Barrel_2,
   Tower_Machine_Barrel_3,
 
-  
   Tower_RailGun_Base_0,
   Tower_RailGun_Base_1,
   Tower_RailGun_Base_2,
@@ -142,19 +141,19 @@ const enum Texture {
   Rocks,
   Satellite,
   Spikes,
-  Tanker
+  Tanker,
 }
 const enum StoreState {
   Tower,
   Special,
-  Closed
+  Closed,
 }
 // Start Menu Music
 const audio = new AudioEngine();
 audio.startMenuMusic();
 // P5 Draw Loop
 const startGame = () => {
-  new P5(p5 => {
+  new P5((p5) => {
     // Global Variables
     const viewPort = new Vector(0, 0, 0); // x, y, scale
     const touchStart = new Vector(0, 0);
@@ -172,7 +171,7 @@ const startGame = () => {
     p5.preload = async function preload() {
       // Load Images
       loadImage(Texture.Base, 'base.png');
-      
+
       loadImage(Texture.PathBase, 'misc/path-base.png');
       loadImage(Texture.PathTee, 'misc/path-t.png');
       loadImage(Texture.PathStraight, 'misc/path-straight.png');
@@ -269,7 +268,7 @@ const startGame = () => {
       p5.createCanvas(p5.windowWidth, p5.windowHeight);
       //p5.pixelDensity(2)
       // Set The ViewPort
-      viewPort.set(p5.width/2, p5.height/2, 1);
+      viewPort.set(p5.width / 2, p5.height / 2, 1);
     };
     // Handle Resize
     p5.windowResized = function windowResized() {
@@ -283,8 +282,7 @@ const startGame = () => {
     // Handle Control Input
     p5.touchStarted = function touchStarted({ touches }: TouchEvent) {
       if (world.paused) return;
-      if (touches)
-        touchStart.set(touches[0].pageX - viewPort.x, touches[0].pageY - viewPort.y);
+      if (touches) touchStart.set(touches[0].pageX - viewPort.x, touches[0].pageY - viewPort.y);
     };
     p5.touchMoved = function mouseDragged(event: MouseEvent | TouchEvent) {
       if (world.paused) return;
@@ -302,11 +300,11 @@ const startGame = () => {
         if ((<any>event).path) {
           for (const elm of (<any>event).path) {
             if (elm.classList && elm.classList.contains('tflex')) return;
-          } 
+          }
         }
         // Verify Spawn
-        const segX = Math.floor(world.towerMouse.Position.x/200)*200;
-        const segY = Math.floor(world.towerMouse.Position.y/200)*200;
+        const segX = Math.floor(world.towerMouse.Position.x / 200) * 200;
+        const segY = Math.floor(world.towerMouse.Position.y / 200) * 200;
         if (world.getSegment(segX, segY) == undefined) {
           audio.effect('error.mp3', 0.5);
           return;
@@ -326,7 +324,7 @@ const startGame = () => {
       if ((<any>event).path) {
         for (const elm of (<any>event).path) {
           if (elm.classList && elm.classList.contains('tflex')) return;
-        } 
+        }
       }
       const diffX = p5.mouseX - viewPort.x;
       const diffY = p5.mouseY - viewPort.y;
@@ -334,37 +332,37 @@ const startGame = () => {
       const dxScaled = diffX * scaleValue;
       const dyScaled = diffY * scaleValue;
       viewPort.z *= scaleValue;
-      viewPort.y -= (dyScaled - diffY);
-      viewPort.x -= (dxScaled - diffX);
+      viewPort.y -= dyScaled - diffY;
+      viewPort.x -= dxScaled - diffX;
     };
     (<HTMLElement>document.getElementById('zoomin')).onclick = () => {
       if (world.paused) return;
-      const diffX = p5.width/2 - viewPort.x;
-      const diffY = p5.height/2 - viewPort.y;
+      const diffX = p5.width / 2 - viewPort.x;
+      const diffY = p5.height / 2 - viewPort.y;
       const scaleValue = 1.1;
       const dxScaled = diffX * scaleValue;
       const dyScaled = diffY * scaleValue;
       viewPort.z *= scaleValue;
-      viewPort.y -= (dyScaled - diffY);
-      viewPort.x -= (dxScaled - diffX);
+      viewPort.y -= dyScaled - diffY;
+      viewPort.x -= dxScaled - diffX;
     };
     (<HTMLElement>document.getElementById('zoomout')).onclick = () => {
       if (world.paused) return;
-      const diffX = p5.width/2 - viewPort.x;
-      const diffY = p5.height/2 - viewPort.y;
+      const diffX = p5.width / 2 - viewPort.x;
+      const diffY = p5.height / 2 - viewPort.y;
       const scaleValue = 0.9;
       const dxScaled = diffX * scaleValue;
       const dyScaled = diffY * scaleValue;
       viewPort.z *= scaleValue;
-      viewPort.y -= (dyScaled - diffY);
-      viewPort.x -= (dxScaled - diffX);
+      viewPort.y -= dyScaled - diffY;
+      viewPort.x -= dxScaled - diffX;
     };
     // Draw Function
     let sellTime = 0;
     p5.draw = async function draw() {
       if (world.paused || world.gameOver) return;
       // Perform World Update
-      let localMoney = world.money;
+      const localMoney = world.money;
       world.Update(p5.deltaTime, p5.frameCount);
       p5.background(0);
       p5.push();
@@ -376,14 +374,11 @@ const startGame = () => {
         p5.image(textures.get(Texture.MoonBg), segment.x, segment.y, segment.width, segment.height);
         p5.noFill();
         p5.push();
-        p5.translate(
-          segment.x+segment.width/2, 
-          segment.y+segment.height/2
-        );
+        p5.translate(segment.x + segment.width / 2, segment.y + segment.height / 2);
         p5.noStroke();
         p5.imageMode(p5.CENTER);
-        for(const dec of segment.decorations){
-          switch(dec.decorationType){
+        for (const dec of segment.decorations) {
+          switch (dec.decorationType) {
             case DecorationType.Altar:
               p5.image(textures.get(Texture.Altar), dec.position.x, dec.position.y, 50, 50);
               break;
@@ -415,48 +410,24 @@ const startGame = () => {
         }
         switch (segment.backgroundType) {
           case BackgroundType.PathBaseMoon:
-            p5.image(
-              textures.get(Texture.PathBase),
-              0,
-              0,
-              segment.width,
-              segment.height
-            );
+            p5.image(textures.get(Texture.PathBase), 0, 0, segment.width, segment.height);
             break;
           case BackgroundType.PathStraightHorizontalMoon:
-            p5.rotate(Math.PI/180*90);
+            p5.rotate((Math.PI / 180) * 90);
           case BackgroundType.PathStraightVerticalMoon:
-            p5.image(
-              textures.get(Texture.PathStraight),
-              0,
-              0,
-              segment.width,
-              segment.height
-            );
+            p5.image(textures.get(Texture.PathStraight), 0, 0, segment.width, segment.height);
             break;
           case BackgroundType.LeftTurnTopMoon:
-            p5.rotate(Math.PI/180*-90);
+            p5.rotate((Math.PI / 180) * -90);
           case BackgroundType.RightTurnTopMoon:
-            p5.rotate(Math.PI/180*180);
+            p5.rotate((Math.PI / 180) * 180);
           case BackgroundType.LeftTurnBottomMoon:
-            p5.rotate(Math.PI/180*90);
+            p5.rotate((Math.PI / 180) * 90);
           case BackgroundType.RightTurnBottomMoon:
-            p5.image(
-              textures.get(Texture.PathTurn),
-              0,
-              0,
-              segment.width,
-              segment.height
-            );
+            p5.image(textures.get(Texture.PathTurn), 0, 0, segment.width, segment.height);
             break;
           case BackgroundType.Intersection4WayMoon:
-            p5.image(
-              textures.get(Texture.Path4Way),
-              0,
-              0,
-              segment.width,
-              segment.height
-            );
+            p5.image(textures.get(Texture.Path4Way), 0, 0, segment.width, segment.height);
             break;
           default:
             break;
@@ -466,49 +437,96 @@ const startGame = () => {
         if (segment.castlePosition != undefined) {
           p5.image(
             textures.get(Texture.Base),
-            segment.castlePosition.x-75,
-            segment.castlePosition.y-100,
+            segment.castlePosition.x - 75,
+            segment.castlePosition.y - 100,
             150,
-            150
+            150,
           );
           p5.noStroke();
-          p5.fill(255,0,0);
+          p5.fill(255, 0, 0);
           p5.rect(50, 10, 100, 10);
           p5.fill(70, 179, 115);
           p5.rect(50, 10, Math.max(100 * (world.baseHealth / 10), 0), 10);
         }
         // Draw Decorations
       }
-      const pa = Math.PI/180;
+      const pa = Math.PI / 180;
       const Mouse = {
-        x: (p5.mouseX - viewPort.x) * (1/viewPort.z),
-        y: (p5.mouseY - viewPort.y) * (1/viewPort.z)
+        x: (p5.mouseX - viewPort.x) * (1 / viewPort.z),
+        y: (p5.mouseY - viewPort.y) * (1 / viewPort.z),
       };
       const drawTower = (tower: Tower, range: boolean = false, menu: boolean = false) => {
         p5.push();
-        if(range){
+        if (range) {
           const rotation = -p5.frameCount / 75;
-          p5.fill(0,0,0,0);
-          p5.stroke(0,225,255,75);
+          p5.fill(0, 0, 0, 0);
+          p5.stroke(0, 225, 255, 75);
           p5.strokeWeight(2);
           p5.strokeCap(p5.SQUARE);
           p5.circle(0, 0, tower.range * 2);
           p5.strokeWeight(5);
-          p5.arc(0,0,tower.range * 2 +6,tower.range * 2+6,-Math.PI/4 + rotation,Math.PI/4 + rotation);
-          p5.arc(0,0,tower.range * 2+6,tower.range * 2+6,(-Math.PI/4 + Math.PI) + rotation, (Math.PI/4 + Math.PI) + rotation);
-          p5.arc(0,0,tower.range * 2+6,tower.range * 2+6,-Math.PI/8 - rotation,Math.PI/8 - rotation);
-          p5.arc(0,0,tower.range * 2+6,tower.range * 2+6,(-Math.PI/8 + Math.PI) - rotation, (Math.PI/8 + Math.PI) - rotation);
-          p5.arc(0,0,tower.range * 2-6,tower.range * 2-6,-Math.PI/8 + Math.PI + Math.PI/2 + rotation,Math.PI/8 + Math.PI + Math.PI/2 + rotation);
-          p5.arc(0,0,tower.range * 2-6,tower.range * 2-6,(-Math.PI/8 + Math.PI/2) + rotation, (Math.PI/8 + Math.PI/2) + rotation);
+          p5.arc(
+            0,
+            0,
+            tower.range * 2 + 6,
+            tower.range * 2 + 6,
+            -Math.PI / 4 + rotation,
+            Math.PI / 4 + rotation,
+          );
+          p5.arc(
+            0,
+            0,
+            tower.range * 2 + 6,
+            tower.range * 2 + 6,
+            -Math.PI / 4 + Math.PI + rotation,
+            Math.PI / 4 + Math.PI + rotation,
+          );
+          p5.arc(
+            0,
+            0,
+            tower.range * 2 + 6,
+            tower.range * 2 + 6,
+            -Math.PI / 8 - rotation,
+            Math.PI / 8 - rotation,
+          );
+          p5.arc(
+            0,
+            0,
+            tower.range * 2 + 6,
+            tower.range * 2 + 6,
+            -Math.PI / 8 + Math.PI - rotation,
+            Math.PI / 8 + Math.PI - rotation,
+          );
+          p5.arc(
+            0,
+            0,
+            tower.range * 2 - 6,
+            tower.range * 2 - 6,
+            -Math.PI / 8 + Math.PI + Math.PI / 2 + rotation,
+            Math.PI / 8 + Math.PI + Math.PI / 2 + rotation,
+          );
+          p5.arc(
+            0,
+            0,
+            tower.range * 2 - 6,
+            tower.range * 2 - 6,
+            -Math.PI / 8 + Math.PI / 2 + rotation,
+            Math.PI / 8 + Math.PI / 2 + rotation,
+          );
         }
-        if(menu && world.towerMouse == null){
+        if (menu && world.towerMouse == null) {
           p5.rectMode(p5.CENTER);
           p5.fill(200, 50, 0, 100);
-          if(Mouse.x > tower.Position.x - 30 && Mouse.x < tower.Position.x + 30 && Mouse.y > tower.Position.y - 55 && Mouse.y < tower.Position.y + 15 - 40){
+          if (
+            Mouse.x > tower.Position.x - 30 &&
+            Mouse.x < tower.Position.x + 30 &&
+            Mouse.y > tower.Position.y - 55 &&
+            Mouse.y < tower.Position.y + 15 - 40
+          ) {
             p5.fill(200, 50, 0, 150);
-            if(p5.mouseIsPressed){
-              sellTime+=2;
-              if(sellTime >= 80){
+            if (p5.mouseIsPressed) {
+              sellTime += 2;
+              if (sellTime >= 80) {
                 world.money += Math.round(tower.cost * 0.75);
                 tower.dead = true;
                 updateStore();
@@ -527,87 +545,87 @@ const startGame = () => {
           p5.text('Sell (hold)', 0, -40);
         }
         p5.imageMode(p5.CENTER);
-        p5.translate(0,-5);
+        p5.translate(0, -5);
         switch (tower.TowerType) {
           case TowerType.Basic:
             if (tower.level == 0) {
-              p5.image(textures.get(Texture.Tower_Basic_Base_0), 0, 10, 75-10, 75/2);
+              p5.image(textures.get(Texture.Tower_Basic_Base_0), 0, 10, 75 - 10, 75 / 2);
               p5.rotate(tower.Direction);
-              p5.image(textures.get(Texture.Tower_Basic_Barrel_0), 35, 0, 80, 75/8);
+              p5.image(textures.get(Texture.Tower_Basic_Barrel_0), 35, 0, 80, 75 / 8);
               p5.rotate(-tower.Direction);
-              p5.image(textures.get(Texture.Tower_Basic_Turret_0), 0, -10, 75, 75/2); 
+              p5.image(textures.get(Texture.Tower_Basic_Turret_0), 0, -10, 75, 75 / 2);
             } else if (tower.level == 1) {
-              p5.image(textures.get(Texture.Tower_Basic_Base_1), 0, 10, 75-10, 75/2);
+              p5.image(textures.get(Texture.Tower_Basic_Base_1), 0, 10, 75 - 10, 75 / 2);
               p5.rotate(tower.Direction);
-              p5.image(textures.get(Texture.Tower_Basic_Barrel_1), 35, 0, 80, 75/8);
+              p5.image(textures.get(Texture.Tower_Basic_Barrel_1), 35, 0, 80, 75 / 8);
               p5.rotate(-tower.Direction);
-              p5.image(textures.get(Texture.Tower_Basic_Turret_1), 0, -10, 75, 75/2); 
+              p5.image(textures.get(Texture.Tower_Basic_Turret_1), 0, -10, 75, 75 / 2);
             } else if (tower.level == 2) {
-              p5.image(textures.get(Texture.Tower_Basic_Base_2), 0, 10, 75-10, 75/2);
+              p5.image(textures.get(Texture.Tower_Basic_Base_2), 0, 10, 75 - 10, 75 / 2);
               p5.rotate(tower.Direction);
-              p5.image(textures.get(Texture.Tower_Basic_Barrel_2), 35, 0, 80, 75/8);
+              p5.image(textures.get(Texture.Tower_Basic_Barrel_2), 35, 0, 80, 75 / 8);
               p5.rotate(-tower.Direction);
-              p5.image(textures.get(Texture.Tower_Basic_Turret_2), 0, -10, 75, 75/2); 
+              p5.image(textures.get(Texture.Tower_Basic_Turret_2), 0, -10, 75, 75 / 2);
             } else if (tower.level <= 3) {
-              p5.image(textures.get(Texture.Tower_Basic_Base_3), 0, 10, 75-10, 75/2);
+              p5.image(textures.get(Texture.Tower_Basic_Base_3), 0, 10, 75 - 10, 75 / 2);
               p5.rotate(tower.Direction);
-              p5.image(textures.get(Texture.Tower_Basic_Barrel_3), 35, 0, 80, 75/8);
+              p5.image(textures.get(Texture.Tower_Basic_Barrel_3), 35, 0, 80, 75 / 8);
               p5.rotate(-tower.Direction);
-              p5.image(textures.get(Texture.Tower_Basic_Turret_3), 0, -10, 75, 75/2); 
+              p5.image(textures.get(Texture.Tower_Basic_Turret_3), 0, -10, 75, 75 / 2);
             }
             break;
           case TowerType.Machine:
             if (tower.level == 0) {
-              p5.image(textures.get(Texture.Tower_Machine_Base_0), 0, 10, 75-10, 75/2);
+              p5.image(textures.get(Texture.Tower_Machine_Base_0), 0, 10, 75 - 10, 75 / 2);
               p5.rotate(tower.Direction);
-              p5.image(textures.get(Texture.Tower_Machine_Barrel_0), 35, 0, 80, 75/8);
+              p5.image(textures.get(Texture.Tower_Machine_Barrel_0), 35, 0, 80, 75 / 8);
               p5.rotate(-tower.Direction);
-              p5.image(textures.get(Texture.Tower_Machine_Turret_0), 0, -10, 75, 75/2); 
+              p5.image(textures.get(Texture.Tower_Machine_Turret_0), 0, -10, 75, 75 / 2);
             } else if (tower.level == 1) {
-              p5.image(textures.get(Texture.Tower_Machine_Base_1), 0, 10, 75-10, 75/2);
+              p5.image(textures.get(Texture.Tower_Machine_Base_1), 0, 10, 75 - 10, 75 / 2);
               p5.rotate(tower.Direction);
-              p5.image(textures.get(Texture.Tower_Machine_Barrel_1), 35, 0, 80, 75/8);
+              p5.image(textures.get(Texture.Tower_Machine_Barrel_1), 35, 0, 80, 75 / 8);
               p5.rotate(-tower.Direction);
-              p5.image(textures.get(Texture.Tower_Machine_Turret_1), 0, -10, 75, 75/2); 
+              p5.image(textures.get(Texture.Tower_Machine_Turret_1), 0, -10, 75, 75 / 2);
             } else if (tower.level == 2) {
-              p5.image(textures.get(Texture.Tower_Machine_Base_2), 0, 10, 75-10, 75/2);
+              p5.image(textures.get(Texture.Tower_Machine_Base_2), 0, 10, 75 - 10, 75 / 2);
               p5.rotate(tower.Direction);
-              p5.image(textures.get(Texture.Tower_Machine_Barrel_2), 35, 0, 80, 75/8);
+              p5.image(textures.get(Texture.Tower_Machine_Barrel_2), 35, 0, 80, 75 / 8);
               p5.rotate(-tower.Direction);
-              p5.image(textures.get(Texture.Tower_Machine_Turret_2), 0, -10, 75, 75/2); 
+              p5.image(textures.get(Texture.Tower_Machine_Turret_2), 0, -10, 75, 75 / 2);
             } else if (tower.level <= 3) {
-              p5.image(textures.get(Texture.Tower_Machine_Base_3), 0, 10, 75-10, 75/2);
+              p5.image(textures.get(Texture.Tower_Machine_Base_3), 0, 10, 75 - 10, 75 / 2);
               p5.rotate(tower.Direction);
-              p5.image(textures.get(Texture.Tower_Machine_Barrel_3), 35, 0, 80, 75/8);
+              p5.image(textures.get(Texture.Tower_Machine_Barrel_3), 35, 0, 80, 75 / 8);
               p5.rotate(-tower.Direction);
-              p5.image(textures.get(Texture.Tower_Machine_Turret_3), 0, -10, 75, 75/2); 
+              p5.image(textures.get(Texture.Tower_Machine_Turret_3), 0, -10, 75, 75 / 2);
             }
             break;
           case TowerType.RailGun:
             if (tower.level == 0) {
-              p5.image(textures.get(Texture.Tower_RailGun_Base_0), 0, 10, 75-10, 75/2);
+              p5.image(textures.get(Texture.Tower_RailGun_Base_0), 0, 10, 75 - 10, 75 / 2);
               p5.rotate(tower.Direction);
-              p5.image(textures.get(Texture.Tower_RailGun_Barrel_0), 35, 0, 80, 75/8);
+              p5.image(textures.get(Texture.Tower_RailGun_Barrel_0), 35, 0, 80, 75 / 8);
               p5.rotate(-tower.Direction);
-              p5.image(textures.get(Texture.Tower_RailGun_Turret_0), 0, -10, 75, 75/2); 
+              p5.image(textures.get(Texture.Tower_RailGun_Turret_0), 0, -10, 75, 75 / 2);
             } else if (tower.level == 1) {
-              p5.image(textures.get(Texture.Tower_RailGun_Base_1), 0, 10, 75-10, 75/2);
+              p5.image(textures.get(Texture.Tower_RailGun_Base_1), 0, 10, 75 - 10, 75 / 2);
               p5.rotate(tower.Direction);
-              p5.image(textures.get(Texture.Tower_RailGun_Barrel_1), 35, 0, 80, 75/8);
+              p5.image(textures.get(Texture.Tower_RailGun_Barrel_1), 35, 0, 80, 75 / 8);
               p5.rotate(-tower.Direction);
-              p5.image(textures.get(Texture.Tower_RailGun_Turret_1), 0, -10, 75, 75/2); 
+              p5.image(textures.get(Texture.Tower_RailGun_Turret_1), 0, -10, 75, 75 / 2);
             } else if (tower.level == 2) {
-              p5.image(textures.get(Texture.Tower_RailGun_Base_2), 0, 10, 75-10, 75/2);
+              p5.image(textures.get(Texture.Tower_RailGun_Base_2), 0, 10, 75 - 10, 75 / 2);
               p5.rotate(tower.Direction);
-              p5.image(textures.get(Texture.Tower_RailGun_Barrel_2), 35, 0, 80, 75/8);
+              p5.image(textures.get(Texture.Tower_RailGun_Barrel_2), 35, 0, 80, 75 / 8);
               p5.rotate(-tower.Direction);
-              p5.image(textures.get(Texture.Tower_RailGun_Turret_2), 0, -10, 75, 75/2); 
+              p5.image(textures.get(Texture.Tower_RailGun_Turret_2), 0, -10, 75, 75 / 2);
             } else if (tower.level <= 3) {
-              p5.image(textures.get(Texture.Tower_RailGun_Base_3), 0, 10, 75-10, 75/2);
+              p5.image(textures.get(Texture.Tower_RailGun_Base_3), 0, 10, 75 - 10, 75 / 2);
               p5.rotate(tower.Direction);
-              p5.image(textures.get(Texture.Tower_RailGun_Barrel_3), 35, 0, 80, 75/8);
+              p5.image(textures.get(Texture.Tower_RailGun_Barrel_3), 35, 0, 80, 75 / 8);
               p5.rotate(-tower.Direction);
-              p5.image(textures.get(Texture.Tower_RailGun_Turret_3), 0, -10, 75, 75/2); 
+              p5.image(textures.get(Texture.Tower_RailGun_Turret_3), 0, -10, 75, 75 / 2);
             }
             break;
         }
@@ -617,8 +635,7 @@ const startGame = () => {
       if (world.towerMouse) {
         world.towerMouse.Position = new Vector(p5.mouseX, p5.mouseY)
           .sub(viewPort.x, viewPort.y)
-          .mulScalar(1/viewPort.z)
-        ;
+          .mulScalar(1 / viewPort.z);
         p5.translate(world.towerMouse.Position.x, world.towerMouse.Position.y);
         drawTower(world.towerMouse, true);
         p5.translate(-world.towerMouse.Position.x, -world.towerMouse.Position.y);
@@ -626,7 +643,7 @@ const startGame = () => {
       }
       for (const tower of world.towers.values()) {
         p5.translate(tower.Position.x, tower.Position.y);
-        let overTower = p5.dist(tower.Position.x,tower.Position.y,Mouse.x,Mouse.y) < 50;
+        const overTower = p5.dist(tower.Position.x, tower.Position.y, Mouse.x, Mouse.y) < 50;
         drawTower(tower, overTower, overTower);
         p5.translate(-tower.Position.x, -tower.Position.y);
       }
@@ -641,270 +658,300 @@ const startGame = () => {
         // Render Enemies
         p5.push();
         p5.translate(enemy.Position.x, enemy.Position.y);
-        p5.scale(Math.round(-enemy.direction.x) < 0 ? -1 : 1,1);
+        p5.scale(Math.round(-enemy.direction.x) < 0 ? -1 : 1, 1);
         p5.scale(0.25 * esize);
         p5.translate(-200, -400);
         switch (enemy.EnemyType) {
           case EnemyType.Test:
             p5.strokeWeight(10);
             p5.stroke(255, 0, 0);
-            p5.point(0,0);
+            p5.point(0, 0);
             break;
           case EnemyType.Basic:
-            p5.image(textures.get(Texture.Enemy_Main_1),0,0);
+            p5.image(textures.get(Texture.Enemy_Main_1), 0, 0);
             break;
           case EnemyType.Fast:
-            p5.image(textures.get(Texture.Enemy_Main_2),0,0);
+            p5.image(textures.get(Texture.Enemy_Main_2), 0, 0);
             break;
           case EnemyType.Strong:
-            p5.image(textures.get(Texture.Enemy_Main_3),0, 0);
+            p5.image(textures.get(Texture.Enemy_Main_3), 0, 0);
             break;
           case EnemyType.Ultra:
-            p5.image(textures.get(Texture.Enemy_Main_4),0, 0);
+            p5.image(textures.get(Texture.Enemy_Main_4), 0, 0);
             p5.image(textures.get(Texture.Enemy_Gun_4), 0, 0);
             break;
           case EnemyType.Scorpion1: // just trying to fix rigging here
             p5.push();
-            p5.translate(100,(-p5.sin(p5.frameCount * pa) * 10) + 175);
-            p5.scale(-p5.sin(p5.frameCount * 2 * pa) * 0.5,1);
+            p5.translate(100, -p5.sin(p5.frameCount * pa) * 10 + 175);
+            p5.scale(-p5.sin(p5.frameCount * 2 * pa) * 0.5, 1);
             p5.image(textures.get(Texture.Enemy_Insect_Leg), -25, 0);
             p5.pop();
             p5.push();
-            p5.translate(125,(-p5.cos(p5.frameCount * pa) * 10) + 175);
-            p5.scale(-p5.cos(p5.frameCount * 2 * pa) * 0.5,1);
+            p5.translate(125, -p5.cos(p5.frameCount * pa) * 10 + 175);
+            p5.scale(-p5.cos(p5.frameCount * 2 * pa) * 0.5, 1);
             p5.image(textures.get(Texture.Enemy_Insect_Leg), -25, 0);
             p5.pop();
             p5.push();
-            p5.translate(150,(-p5.sin(p5.frameCount * pa) * 10) + 175);
-            p5.scale(-p5.sin(p5.frameCount * 2 * pa) * 0.5,1);
+            p5.translate(150, -p5.sin(p5.frameCount * pa) * 10 + 175);
+            p5.scale(-p5.sin(p5.frameCount * 2 * pa) * 0.5, 1);
             p5.image(textures.get(Texture.Enemy_Insect_Leg), -25, 0);
             p5.pop();
             p5.image(textures.get(Texture.Enemy_Main_5), 0, 0);
             p5.push();
-            p5.translate(100,(p5.sin(p5.frameCount * pa) * 10) + 175);
-            p5.scale(p5.sin(p5.frameCount * 2 * pa) * 0.5,1);
+            p5.translate(100, p5.sin(p5.frameCount * pa) * 10 + 175);
+            p5.scale(p5.sin(p5.frameCount * 2 * pa) * 0.5, 1);
             p5.image(textures.get(Texture.Enemy_Insect_Leg), -25, 0);
             p5.pop();
             p5.push();
-            p5.translate(125,(p5.cos(p5.frameCount * pa) * 10) + 175);
-            p5.scale(p5.cos(p5.frameCount * 2 * pa) * 0.5,1);
+            p5.translate(125, p5.cos(p5.frameCount * pa) * 10 + 175);
+            p5.scale(p5.cos(p5.frameCount * 2 * pa) * 0.5, 1);
             p5.image(textures.get(Texture.Enemy_Insect_Leg), -25, 0);
             p5.pop();
             p5.push();
-            p5.translate(150,(p5.sin(p5.frameCount * pa) * 10) + 175);
-            p5.scale(p5.sin(p5.frameCount * 2 * pa) * 0.5,1);
+            p5.translate(150, p5.sin(p5.frameCount * pa) * 10 + 175);
+            p5.scale(p5.sin(p5.frameCount * 2 * pa) * 0.5, 1);
             p5.image(textures.get(Texture.Enemy_Insect_Leg), -25, 0);
             p5.pop();
             break;
           case EnemyType.Scorpion2:
             p5.push();
-            p5.translate(100,(-p5.sin(p5.frameCount * pa) * 10) + 175);
-            p5.scale(-p5.sin(p5.frameCount * 2 * pa) * 0.5,1);
+            p5.translate(100, -p5.sin(p5.frameCount * pa) * 10 + 175);
+            p5.scale(-p5.sin(p5.frameCount * 2 * pa) * 0.5, 1);
             p5.image(textures.get(Texture.Enemy_Insect_Leg), -25, 0);
             p5.pop();
             p5.push();
-            p5.translate(125,(-p5.cos(p5.frameCount * pa) * 10) + 175);
-            p5.scale(-p5.cos(p5.frameCount * 2 * pa) * 0.5,1);
+            p5.translate(125, -p5.cos(p5.frameCount * pa) * 10 + 175);
+            p5.scale(-p5.cos(p5.frameCount * 2 * pa) * 0.5, 1);
             p5.image(textures.get(Texture.Enemy_Insect_Leg), -25, 0);
             p5.pop();
             p5.push();
-            p5.translate(150,(-p5.sin(p5.frameCount * pa) * 10) + 175);
-            p5.scale(-p5.sin(p5.frameCount * 2 * pa) * 0.5,1);
+            p5.translate(150, -p5.sin(p5.frameCount * pa) * 10 + 175);
+            p5.scale(-p5.sin(p5.frameCount * 2 * pa) * 0.5, 1);
             p5.image(textures.get(Texture.Enemy_Insect_Leg), -25, 0);
             p5.pop();
             p5.image(textures.get(Texture.Enemy_Main_6), 0, 0);
             p5.image(textures.get(Texture.Enemy_Gun_6), 0, 0);
             p5.push();
-            p5.translate(100,(p5.sin(p5.frameCount * pa) * 10) + 175);
-            p5.scale(p5.sin(p5.frameCount * 2 * pa) * 0.5,1);
+            p5.translate(100, p5.sin(p5.frameCount * pa) * 10 + 175);
+            p5.scale(p5.sin(p5.frameCount * 2 * pa) * 0.5, 1);
             p5.image(textures.get(Texture.Enemy_Insect_Leg), -25, 0);
             p5.pop();
             p5.push();
-            p5.translate(125,(p5.cos(p5.frameCount * pa) * 10) + 175);
-            p5.scale(p5.cos(p5.frameCount * 2 * pa) * 0.5,1);
+            p5.translate(125, p5.cos(p5.frameCount * pa) * 10 + 175);
+            p5.scale(p5.cos(p5.frameCount * 2 * pa) * 0.5, 1);
             p5.image(textures.get(Texture.Enemy_Insect_Leg), -25, 0);
             p5.pop();
             p5.push();
-            p5.translate(150,(p5.sin(p5.frameCount * pa) * 10) + 175);
-            p5.scale(p5.sin(p5.frameCount * 2 * pa) * 0.5,1);
+            p5.translate(150, p5.sin(p5.frameCount * pa) * 10 + 175);
+            p5.scale(p5.sin(p5.frameCount * 2 * pa) * 0.5, 1);
             p5.image(textures.get(Texture.Enemy_Insect_Leg), -25, 0);
             p5.pop();
             break;
           case EnemyType.Wasp:
             p5.push();
-            p5.translate(200+20,200-80);
+            p5.translate(200 + 20, 200 - 80);
             p5.rotate(p5.sin(p5.frameCount * 25 * pa) * 15 * pa);
             p5.image(
               textures.get(Texture.Enemy_Wing_7),
               -160,
-              -60 + (p5.sin(p5.frameCount * 2) * 10)
+              -60 + p5.sin(p5.frameCount * 2) * 10,
             );
-            p5.rotate(2*-p5.sin(p5.frameCount * 25 * pa) * 15 * pa);
+            p5.rotate(2 * -p5.sin(p5.frameCount * 25 * pa) * 15 * pa);
             p5.image(
-              textures.get(Texture.Enemy_Wing_7), 
-              -160, -60 + (p5.sin(p5.frameCount * 2) * 10)
+              textures.get(Texture.Enemy_Wing_7),
+              -160,
+              -60 + p5.sin(p5.frameCount * 2) * 10,
             );
             p5.pop();
             p5.image(textures.get(Texture.Enemy_Main_7), 0, p5.sin(p5.frameCount * 2 * pa) * 10);
             break;
-          case EnemyType.TitanBeetle: 
+          case EnemyType.TitanBeetle:
             p5.image(textures.get(Texture.Enemy_Main_8), 0, 0);
             break;
           case EnemyType.Spider:
             p5.image(textures.get(Texture.Enemy_Main_9), 0, 0);
             p5.image(textures.get(Texture.Enemy_Gun_9), 0, 0);
-            
+
             p5.push();
-            p5.translate(100,-p5.sin(p5.frameCount * pa) * 10 + 175);
-            p5.scale(p5.sin(p5.frameCount * 2 * pa) * 0.5,1);
+            p5.translate(100, -p5.sin(p5.frameCount * pa) * 10 + 175);
+            p5.scale(p5.sin(p5.frameCount * 2 * pa) * 0.5, 1);
             p5.image(textures.get(Texture.Enemy_Insect_Leg), -25, 0);
             p5.pop();
-            
+
             p5.push();
-            p5.translate(50,-p5.cos(p5.frameCount * pa) * 10 + 175);
-            p5.scale(p5.cos(p5.frameCount * 2 * pa) * 0.5,1);
+            p5.translate(50, -p5.cos(p5.frameCount * pa) * 10 + 175);
+            p5.scale(p5.cos(p5.frameCount * 2 * pa) * 0.5, 1);
             p5.image(textures.get(Texture.Enemy_Insect_Leg), -25, 0);
             p5.pop();
-            
+
             p5.push();
-            p5.translate(170,-p5.sin(p5.frameCount * pa) * 10 + 200);
-            p5.scale(p5.sin(p5.frameCount * 2 * pa) * 0.5,0.75);
+            p5.translate(170, -p5.sin(p5.frameCount * pa) * 10 + 200);
+            p5.scale(p5.sin(p5.frameCount * 2 * pa) * 0.5, 0.75);
             p5.image(textures.get(Texture.Enemy_Insect_Leg), -25, 0);
             p5.pop();
-            
+
             p5.push();
-            p5.translate(220,-p5.cos(p5.frameCount * pa) * 10 + 200);
-            p5.scale(p5.cos(p5.frameCount * 2 * pa) * 0.5,0.75);
+            p5.translate(220, -p5.cos(p5.frameCount * pa) * 10 + 200);
+            p5.scale(p5.cos(p5.frameCount * 2 * pa) * 0.5, 0.75);
             p5.image(textures.get(Texture.Enemy_Insect_Leg), -25, 0);
             p5.pop();
             break;
           case EnemyType.ShieldStrong:
             p5.push();
-            p5.translate(-55  + 200,25 + 200);
+            p5.translate(-55 + 200, 25 + 200);
             p5.rotate(p5.cos(p5.frameCount * 3 * pa) * 15 * pa);
-            p5.image(textures.get(Texture.Enemy_Leg_10), -15,-15,100,200);
+            p5.image(textures.get(Texture.Enemy_Leg_10), -15, -15, 100, 200);
             p5.rotate(2 * -(p5.cos(p5.frameCount * 3 * pa) * 15 * pa));
-            p5.image(textures.get(Texture.Enemy_Leg_10), -15,-15,100,200);
+            p5.image(textures.get(Texture.Enemy_Leg_10), -15, -15, 100, 200);
             p5.pop();
-            p5.image(textures.get(Texture.Enemy_Main_10), 0,0);
+            p5.image(textures.get(Texture.Enemy_Main_10), 0, 0);
             break;
           case EnemyType.ShieldDefault:
             p5.push();
-            p5.translate(-55  + 200,25 + 200);
+            p5.translate(-55 + 200, 25 + 200);
             p5.rotate(p5.cos(p5.frameCount * 3 * pa) * 15 * pa);
-            p5.image(textures.get(Texture.Enemy_Leg_10), -15,-15,100,200);
+            p5.image(textures.get(Texture.Enemy_Leg_10), -15, -15, 100, 200);
             p5.rotate(2 * -(p5.cos(p5.frameCount * 3 * pa) * 15 * pa));
-            p5.image(textures.get(Texture.Enemy_Leg_10), -15,-15,100,200);
+            p5.image(textures.get(Texture.Enemy_Leg_10), -15, -15, 100, 200);
             p5.pop();
-            p5.image(textures.get(Texture.Enemy_Main_11), 0,0);
+            p5.image(textures.get(Texture.Enemy_Main_11), 0, 0);
             break;
           case EnemyType.FireShield:
             p5.push();
-            p5.translate(-55  + 200,25 + 200);
+            p5.translate(-55 + 200, 25 + 200);
             p5.rotate(p5.cos(p5.frameCount * 3 * pa) * 15 * pa);
-            p5.image(textures.get(Texture.Enemy_Leg_12), -15,-15,100,200);
+            p5.image(textures.get(Texture.Enemy_Leg_12), -15, -15, 100, 200);
             p5.rotate(2 * -(p5.cos(p5.frameCount * 3 * pa) * 15 * pa));
-            p5.image(textures.get(Texture.Enemy_Leg_12), -15,-15,100,200);
+            p5.image(textures.get(Texture.Enemy_Leg_12), -15, -15, 100, 200);
             p5.pop();
-            p5.image(textures.get(Texture.Enemy_Main_12), 0,0);
+            p5.image(textures.get(Texture.Enemy_Main_12), 0, 0);
             break;
           case EnemyType.FireShieldGunner:
             p5.push();
-            p5.translate(-55  + 200,25 + 200);
+            p5.translate(-55 + 200, 25 + 200);
             p5.rotate(p5.cos(p5.frameCount * 3 * pa) * 15 * pa);
-            p5.image(textures.get(Texture.Enemy_Leg_12), -15,-15,100,200);
+            p5.image(textures.get(Texture.Enemy_Leg_12), -15, -15, 100, 200);
             p5.rotate(2 * -(p5.cos(p5.frameCount * 3 * pa) * 15 * pa));
-            p5.image(textures.get(Texture.Enemy_Leg_12), -15,-15,100,200);
+            p5.image(textures.get(Texture.Enemy_Leg_12), -15, -15, 100, 200);
             p5.pop();
-            p5.image(textures.get(Texture.Enemy_Main_13), 0,0);
+            p5.image(textures.get(Texture.Enemy_Main_13), 0, 0);
             p5.image(textures.get(Texture.Enemy_Gun_13), 0, 0);
             break;
           case EnemyType.Troll:
-            p5.image(textures.get(Texture.Enemy_Main_14), 0,0);
+            p5.image(textures.get(Texture.Enemy_Main_14), 0, 0);
             p5.image(textures.get(Texture.Enemy_Gun_14), 0, 0);
             break;
           case EnemyType.GhostMantis:
-            p5.image(textures.get(Texture.Enemy_Main_15), 0,0);
+            p5.image(textures.get(Texture.Enemy_Main_15), 0, 0);
             break;
           case EnemyType.Virus1:
-            p5.image(textures.get(Texture.Enemy_Main_16), 0,0);
+            p5.image(textures.get(Texture.Enemy_Main_16), 0, 0);
             break;
           case EnemyType.Virus2:
-            p5.image(textures.get(Texture.Enemy_Main_17), 0,0);
+            p5.image(textures.get(Texture.Enemy_Main_17), 0, 0);
             break;
           case EnemyType.Ship:
-            p5.image(textures.get(Texture.Enemy_Main_18), 0,0,400,0.75 * 400);
+            p5.image(textures.get(Texture.Enemy_Main_18), 0, 0, 400, 0.75 * 400);
             break;
           case EnemyType.Boss1:
-            p5.image(textures.get(Texture.Enemy_Boss_Main_1), 0,0);
-            p5.image(textures.get(Texture.Enemy_Boss_Gun_1), 0,0);
+            p5.image(textures.get(Texture.Enemy_Boss_Main_1), 0, 0);
+            p5.image(textures.get(Texture.Enemy_Boss_Gun_1), 0, 0);
             break;
           case EnemyType.Boss2:
-            p5.image(textures.get(Texture.Enemy_Boss_Main_2), 0,0);
-            p5.image(textures.get(Texture.Enemy_Boss_Gun_2), 0,0);
+            p5.image(textures.get(Texture.Enemy_Boss_Main_2), 0, 0);
+            p5.image(textures.get(Texture.Enemy_Boss_Gun_2), 0, 0);
             break;
         }
         p5.noStroke();
-        p5.fill(255,0,0);
+        p5.fill(255, 0, 0);
         p5.rect(10, -20, 380, 20);
         p5.fill(70, 179, 115);
-        p5.rect(10, -20, 380 * (enemy.health/enemy.maxHealth), 20);
+        p5.rect(10, -20, 380 * (enemy.health / enemy.maxHealth), 20);
         p5.pop();
       }
 
       for (const particle of worldContents.particles.values()) {
         p5.push();
         p5.translate(particle.Position.x, particle.Position.y);
-        switch (particle.ParticleType){
+        switch (particle.ParticleType) {
           case ParticleType.Fire:
             p5.noStroke();
             p5.rectMode(p5.CENTER);
             p5.fill(255, 225, 0, particle.Opacity);
-            p5.rect(0,0,particle.size,particle.size);
+            p5.rect(0, 0, particle.size, particle.size);
             break;
           case ParticleType.Smoke:
             p5.noStroke();
             p5.rectMode(p5.CENTER);
-            p5.fill(100,100,100, particle.Opacity);
-            p5.rect(0,0,particle.size,particle.size);
+            p5.fill(100, 100, 100, particle.Opacity);
+            p5.rect(0, 0, particle.size, particle.size);
             break;
           case ParticleType.Bullet:
-            p5.stroke(0,225,255, particle.Opacity);
-            p5.strokeWeight(7 * particle.size/particle.len);
-            p5.line(p5.cos(particle.rot) * (particle.len - particle.size), p5.sin(particle.rot) * (particle.len - particle.size), p5.cos(particle.rot) * particle.len, p5.sin(particle.rot) * particle.len);
-            p5.stroke(255,255,255, particle.Opacity);
-            p5.strokeWeight(3 * particle.size/particle.len);
-            p5.line(p5.cos(particle.rot) * (particle.len - particle.size), p5.sin(particle.rot) * (particle.len - particle.size), p5.cos(particle.rot) * particle.len, p5.sin(particle.rot) * particle.len);
+            p5.stroke(0, 225, 255, particle.Opacity);
+            p5.strokeWeight((7 * particle.size) / particle.len);
+            p5.line(
+              p5.cos(particle.rot) * (particle.len - particle.size),
+              p5.sin(particle.rot) * (particle.len - particle.size),
+              p5.cos(particle.rot) * particle.len,
+              p5.sin(particle.rot) * particle.len,
+            );
+            p5.stroke(255, 255, 255, particle.Opacity);
+            p5.strokeWeight((3 * particle.size) / particle.len);
+            p5.line(
+              p5.cos(particle.rot) * (particle.len - particle.size),
+              p5.sin(particle.rot) * (particle.len - particle.size),
+              p5.cos(particle.rot) * particle.len,
+              p5.sin(particle.rot) * particle.len,
+            );
             break;
           case ParticleType.MgunBullet:
-            p5.stroke(0,255, 150, particle.Opacity);
-            p5.strokeWeight(7 * particle.size/particle.len);
-            p5.line(p5.cos(particle.rot) * (particle.len - particle.size), p5.sin(particle.rot) * (particle.len - particle.size), p5.cos(particle.rot) * particle.len, p5.sin(particle.rot) * particle.len);
-            p5.stroke(255,255,255, particle.Opacity);
-            p5.strokeWeight(3 * particle.size/particle.len);
-            p5.line(p5.cos(particle.rot) * (particle.len - particle.size), p5.sin(particle.rot) * (particle.len - particle.size), p5.cos(particle.rot) * particle.len, p5.sin(particle.rot) * particle.len);
+            p5.stroke(0, 255, 150, particle.Opacity);
+            p5.strokeWeight((7 * particle.size) / particle.len);
+            p5.line(
+              p5.cos(particle.rot) * (particle.len - particle.size),
+              p5.sin(particle.rot) * (particle.len - particle.size),
+              p5.cos(particle.rot) * particle.len,
+              p5.sin(particle.rot) * particle.len,
+            );
+            p5.stroke(255, 255, 255, particle.Opacity);
+            p5.strokeWeight((3 * particle.size) / particle.len);
+            p5.line(
+              p5.cos(particle.rot) * (particle.len - particle.size),
+              p5.sin(particle.rot) * (particle.len - particle.size),
+              p5.cos(particle.rot) * particle.len,
+              p5.sin(particle.rot) * particle.len,
+            );
             break;
           case ParticleType.RailgunBullet:
-            p5.stroke(255,225,0, particle.Opacity);
-            p5.strokeWeight(7 * particle.size/particle.len);
-            p5.line(p5.cos(particle.rot) * (particle.len - particle.size), p5.sin(particle.rot) * (particle.len - particle.size), p5.cos(particle.rot) * particle.len, p5.sin(particle.rot) * particle.len);
-            p5.stroke(255,255,255, particle.Opacity);
-            p5.strokeWeight(3 * particle.size/particle.len);
-            p5.line(p5.cos(particle.rot) * (particle.len - particle.size), p5.sin(particle.rot) * (particle.len - particle.size), p5.cos(particle.rot) * particle.len, p5.sin(particle.rot) * particle.len);
+            p5.stroke(255, 225, 0, particle.Opacity);
+            p5.strokeWeight((7 * particle.size) / particle.len);
+            p5.line(
+              p5.cos(particle.rot) * (particle.len - particle.size),
+              p5.sin(particle.rot) * (particle.len - particle.size),
+              p5.cos(particle.rot) * particle.len,
+              p5.sin(particle.rot) * particle.len,
+            );
+            p5.stroke(255, 255, 255, particle.Opacity);
+            p5.strokeWeight((3 * particle.size) / particle.len);
+            p5.line(
+              p5.cos(particle.rot) * (particle.len - particle.size),
+              p5.sin(particle.rot) * (particle.len - particle.size),
+              p5.cos(particle.rot) * particle.len,
+              p5.sin(particle.rot) * particle.len,
+            );
             break;
         }
         p5.pop();
       }
       p5.pop();
 
-      if(p5.frameCount % 25 === 0)
-        fr = p5.frameRate().toFixed(0);
+      if (p5.frameCount % 25 === 0) fr = p5.frameRate().toFixed(0);
       p5.text(fr, 20, 20);
 
       moneyCounts.innerText = `${world.money}`;
       waveButton.disabled = world.activeWave || !msgBox.classList.contains('Hidden');
-      if(world.waveEnded && !world.activeWave) {
-        if(world.waveCount > 0){
+      if (world.waveEnded && !world.activeWave) {
+        if (world.waveCount > 0) {
           audio.effect('nextwave.mp3', 0.5);
         }
         updateStore();
@@ -920,21 +967,20 @@ const startGame = () => {
         await fetch('/api/highscore', {
           headers: {
             'Content-Type': 'application/json',
-            'accept': '*/*'
+            accept: '*/*',
           },
           method: 'POST',
-          body: JSON.stringify({ 
-            score: world.waveCount, 
+          body: JSON.stringify({
+            score: world.waveCount,
             generations: world.worldGenerator.generations,
-            segmentLength: world.WorldSegmentList.length
-          })
+            segmentLength: world.WorldSegmentList.length,
+          }),
         });
         // Show Game Over popup
         document.getElementById('gameover')?.classList.remove('Hidden');
         const btns = document.querySelectorAll('button');
-        btns.forEach(btn => {
-           if (btn.id != 'HomeBtn4') 
-            btn.disabled = true;
+        btns.forEach((btn) => {
+          if (btn.id != 'HomeBtn4') btn.disabled = true;
         });
       }
       // Money
@@ -942,51 +988,50 @@ const startGame = () => {
         updateStore();
       }
       //arrow movements here
-      if(p5.keyIsDown(p5.UP_ARROW)) viewPort.y += 10;
-      if(p5.keyIsDown(p5.DOWN_ARROW)) viewPort.y -= 10;
-      if(p5.keyIsDown(p5.LEFT_ARROW)) viewPort.x += 10;
-      if(p5.keyIsDown(p5.RIGHT_ARROW)) viewPort.x -= 10;
+      if (p5.keyIsDown(p5.UP_ARROW)) viewPort.y += 10;
+      if (p5.keyIsDown(p5.DOWN_ARROW)) viewPort.y -= 10;
+      if (p5.keyIsDown(p5.LEFT_ARROW)) viewPort.x += 10;
+      if (p5.keyIsDown(p5.RIGHT_ARROW)) viewPort.x -= 10;
     };
-    
+
     p5.keyReleased = function keyReleased() {
       if (world.paused) return;
-      if(p5.keyCode === 32) {
+      if (p5.keyCode === 32) {
         if (msgBox.classList.contains('Hidden')) {
           world.newWave();
           waveCount.innerText = `${world.waveCount}`;
           activemessageIndex = 0;
-        }else{
+        } else {
           audio.clickEffect();
           activemessageIndex++;
           setMessage();
         }
       }
-      if(p5.keyCode === 27) {
+      if (p5.keyCode === 27) {
         world.towerMouse = null;
-      } 
-      if(p5.keyCode === 187) {
-        const diffX = p5.width/2 - viewPort.x;
-        const diffY = p5.height/2 - viewPort.y;
+      }
+      if (p5.keyCode === 187) {
+        const diffX = p5.width / 2 - viewPort.x;
+        const diffY = p5.height / 2 - viewPort.y;
         const scaleValue = 1.1;
         const dxScaled = diffX * scaleValue;
         const dyScaled = diffY * scaleValue;
         viewPort.z *= scaleValue;
-        viewPort.y -= (dyScaled - diffY);
-        viewPort.x -= (dxScaled - diffX);
+        viewPort.y -= dyScaled - diffY;
+        viewPort.x -= dxScaled - diffX;
       }
-      if(p5.keyCode === 189) {
-        const diffX = p5.width/2 - viewPort.x;
-        const diffY = p5.height/2 - viewPort.y;
+      if (p5.keyCode === 189) {
+        const diffX = p5.width / 2 - viewPort.x;
+        const diffY = p5.height / 2 - viewPort.y;
         const scaleValue = 0.9;
         const dxScaled = diffX * scaleValue;
         const dyScaled = diffY * scaleValue;
         viewPort.z *= scaleValue;
-        viewPort.y -= (dyScaled - diffY);
-        viewPort.x -= (dxScaled - diffX);
+        viewPort.y -= dyScaled - diffY;
+        viewPort.x -= dxScaled - diffX;
       }
-      if (p5.keyCode == 27 && world.towerMouse != null)
-        world.towerMouse = null;
-        activeTowerPlacement = null;
+      if (p5.keyCode == 27 && world.towerMouse != null) world.towerMouse = null;
+      activeTowerPlacement = null;
       updateStore();
     };
     // Add Buttons
@@ -1010,7 +1055,8 @@ const startGame = () => {
       if (
         Dialog[world.waveCount] == undefined ||
         Dialog[world.waveCount][activemessageIndex] == undefined
-      ) return msgBox.classList.add('Hidden');
+      )
+        return msgBox.classList.add('Hidden');
       const activeMessage = Dialog[world.waveCount][activemessageIndex];
       msgImage.src = `/src/assets/replers/${activeMessage.image}`;
       msgName.innerText = activeMessage.name;
@@ -1034,14 +1080,17 @@ const startGame = () => {
       const storeShelf = <HTMLElement>storeBody.querySelector('.tflex');
       storeShelf.innerHTML = '';
       const storeData = TowersShelf;
-      for (const [ itemName, shelfItem ] of storeData.entries()) {
+      for (const [itemName, shelfItem] of storeData.entries()) {
         // Build Html Element
-        storeShelf.insertAdjacentHTML('beforeend', `
-          <div class="topt opt ${world.money < (shelfItem.cost + (world.waveCount * 5)) ? 'Invalid' : ''}" itemtype="${itemName}">
-            <div class="tname">${shelfItem.name} - $${shelfItem.cost + (world.waveCount * 5)}</div>
+        storeShelf.insertAdjacentHTML(
+          'beforeend',
+          `
+          <div class="topt opt ${world.money < shelfItem.cost + world.waveCount * 5 ? 'Invalid' : ''}" itemtype="${itemName}">
+            <div class="tname">${shelfItem.name} - $${shelfItem.cost + world.waveCount * 5}</div>
             <img src="/src/assets/${shelfItem.image}">
           </div>
-        `);
+        `,
+        );
       }
       for (const child of <HTMLElement[]>Array.from(storeShelf.children)) {
         child.onclick = () => {
@@ -1050,11 +1099,17 @@ const startGame = () => {
           if (purchaseType.has(item)) {
             const purchase = <StoreItem>purchaseType.get(<number>item);
             // TODO: Show alert box and return rif you dont have enough money
-            if (world.money < (purchase.cost + (world.waveCount * 5))) {
+            if (world.money < purchase.cost + world.waveCount * 5) {
               audio.effect('error.mp3', 0.5);
             } else if (storeState == StoreState.Tower) {
               activeTowerPlacement = purchase;
-              world.towerMouse = new Tower(purchase.cost, <TowerType>purchase?.type, new Vector(0, 0), 0, purchase.level ?? 0);
+              world.towerMouse = new Tower(
+                purchase.cost,
+                <TowerType>purchase?.type,
+                new Vector(0, 0),
+                0,
+                purchase.level ?? 0,
+              );
               updateStore();
             }
           }
@@ -1071,7 +1126,8 @@ const startGame = () => {
       updateStore();
     };
     towerStoreButton.onclick = () => toggleStore(StoreState.Tower);
-    if (specialStoreButton != null) specialStoreButton.onclick = () => toggleStore(StoreState.Special);
+    if (specialStoreButton != null)
+      specialStoreButton.onclick = () => toggleStore(StoreState.Special);
     speedButton.onclick = () => {
       if (world.worldSpeedScalar == 1) {
         world.worldSpeedScalar = 0.5;
@@ -1099,11 +1155,11 @@ const enum Button {
   How,
   Credits,
   Home,
-  Leaderboard
+  Leaderboard,
 }
 const menuButtonPressed = async (btn: Button) => {
   // Hide Other Pages
-  document.querySelectorAll('#app > section').forEach(scene => scene.classList.add('Hidden'));
+  document.querySelectorAll('#app > section').forEach((scene) => scene.classList.add('Hidden'));
   // Show Page
   switch (btn) {
     case Button.Start:
@@ -1129,22 +1185,22 @@ const menuButtonPressed = async (btn: Button) => {
         container.innerHTML = '';
         const statsResponse = await _statsResponse.json();
         const dataResponse = await _dataResponse.json();
-        statsResponse.sort((a: any[], b: any[]) => b[1] - a[1]).map(([ name, score ]: any[], i: number) => {
-          // <div class="row"><span>1. JDOG787</span><span>1004</span>
-          const row = document.createElement('div');
-          const span1 = document.createElement('span');
-          const span2 = document.createElement('span');
-          span1.textContent = `${i + 1}. ${name}`;
-          span2.textContent = `${score}`;
-          row.appendChild(span1);
-          row.appendChild(span2);
-          row.classList.add('row');
-          container.appendChild(row);
-        });
-        if (profileName)
-          profileName.innerText = dataResponse.name;
-        if (profileBox && dataResponse.score)
-          profileBox.innerText = dataResponse.score ?? 0;
+        statsResponse
+          .sort((a: any[], b: any[]) => b[1] - a[1])
+          .map(([name, score]: any[], i: number) => {
+            // <div class="row"><span>1. JDOG787</span><span>1004</span>
+            const row = document.createElement('div');
+            const span1 = document.createElement('span');
+            const span2 = document.createElement('span');
+            span1.textContent = `${i + 1}. ${name}`;
+            span2.textContent = `${score}`;
+            row.appendChild(span1);
+            row.appendChild(span2);
+            row.classList.add('row');
+            container.appendChild(row);
+          });
+        if (profileName) profileName.innerText = dataResponse.name;
+        if (profileBox && dataResponse.score) profileBox.innerText = dataResponse.score ?? 0;
       } catch (err) {
         const row = document.createElement('div');
         const span1 = document.createElement('span');
@@ -1168,7 +1224,7 @@ homeButton_1.onclick = () => menuButtonPressed(Button.Home);
 homeButton_2.onclick = () => menuButtonPressed(Button.Home);
 homeButton_3.onclick = () => menuButtonPressed(Button.Home);
 homeButton_4.onclick = () => window.location.reload();
-if(window.localStorage.getItem('seenmodal')) {
+if (window.localStorage.getItem('seenmodal')) {
   loginModal.classList.add('Hidden');
   loginOverlay.classList.add('Hidden');
 }
@@ -1208,7 +1264,7 @@ authorizeReplit.onclick = () => {
       } else {
         profileName.innerText = 'Anonymous';
         usernameIndicator.innerText = 'Anonymous';
-      } 
+      }
     }
   } catch (err) {
     usernameIndicator.innerText = 'Failed To Fetch User';

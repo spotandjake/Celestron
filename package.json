@@ -7,7 +7,8 @@
     "build": "vite build && bash build.sh",
     "preview": "yarn build && yarn host",
     "lint": "eslint ./src/main.ts",
-    "host": "node server.js"
+    "host": "node server.js",
+    "format": "prettier-eslint \"src/**/*.ts\" --write"
   },
   "dependencies": {
     "@replit/database": "^2.0.1",
@@ -27,6 +28,8 @@
     "@typescript-eslint/eslint-plugin": "^5.16.0",
     "@typescript-eslint/parser": "^5.16.0",
     "eslint": "^8.11.0",
+    "prettier-eslint": "^16.3.0",
+    "prettier-eslint-cli": "^8.0.1",
     "sass": "^1.49.9",
     "typescript": "^4.6.2"
   }

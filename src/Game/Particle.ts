@@ -1,4 +1,4 @@
-import {ParticleType} from './Types';
+import { ParticleType } from './Types';
 import Vector from './Vector';
 import World from './World';
 export default class Particle {
@@ -23,28 +23,28 @@ export default class Particle {
     x: number,
     y: number,
     {
-      rotation
+      rotation,
     }: {
-      rotation?: number
-    } = {}
+      rotation?: number;
+    } = {},
   ) {
     this.World = world;
     this.ParticleType = particleType;
     this.Position = new Vector(x, y);
-    if(rotation) this.rot = rotation;
+    if (rotation) this.rot = rotation;
     // Handle Particle Info
-    switch(particleType){
+    switch (particleType) {
       case ParticleType.Fire:
         this.rot = world.worldGenerator.nextRandomRange(180, 361);
         //this.speed = this.random(0.5, 5);
         this.size = world.worldGenerator.nextRandomRange(5, 31);
-        this.Opacity = world.worldGenerator.nextRandomRange(50, 151)
+        this.Opacity = world.worldGenerator.nextRandomRange(50, 151);
         break;
       case ParticleType.Smoke:
         this.rot = world.worldGenerator.nextRandomRange(0, 361);
         //this.speed = this.random(0.5, 5);
         this.size = world.worldGenerator.nextRandomRange(3, 11);
-        this.Opacity = world.worldGenerator.nextRandomRange(50,100)
+        this.Opacity = world.worldGenerator.nextRandomRange(50, 100);
         break;
       case ParticleType.Bullet:
         this.size = 600; //basically time
@@ -64,39 +64,39 @@ export default class Particle {
     }
   }
   public Update(deltaTime: number) {
-    const rotationRadian = this.rot * (Math.PI/180);
-    const speedScalar = deltaTime/500;
-    switch(this.ParticleType){
+    const rotationRadian = this.rot * (Math.PI / 180);
+    const speedScalar = deltaTime / 500;
+    switch (this.ParticleType) {
       case ParticleType.Fire:
         this.Position.add(Math.cos(rotationRadian), Math.sin(rotationRadian) * 2);
         this.size -= 0.15;
         this.Opacity -= 1;
-      break;
+        break;
       case ParticleType.Smoke:
         this.Position.add(Math.cos(rotationRadian), Math.sin(rotationRadian) * 1.5);
         this.size += 2;
         this.Opacity -= 7;
-      break;
+        break;
       case ParticleType.Bullet:
         this.Position.add(Math.cos(rotationRadian), Math.sin(rotationRadian));
-        this.size += (0-this.size)/10;
+        this.size += (0 - this.size) / 10;
         this.Opacity -= 10;
-        
-      break;
+
+        break;
       case ParticleType.MgunBullet:
         this.Position.add(Math.cos(rotationRadian), Math.sin(rotationRadian));
-        this.size += (0-this.size)/5;
+        this.size += (0 - this.size) / 5;
         this.Opacity -= 10;
-          
-      break;
+
+        break;
       case ParticleType.RailgunBullet:
         this.Position.add(Math.cos(rotationRadian), Math.sin(rotationRadian));
-        this.size += (0-this.size)/20;
+        this.size += (0 - this.size) / 20;
         this.Opacity -= 10;
-        
-      break;
+
+        break;
     }
-    if(this.Opacity < 0 || this.size < 0){
+    if (this.Opacity < 0 || this.size < 0) {
       this.dead = true;
     }
   }

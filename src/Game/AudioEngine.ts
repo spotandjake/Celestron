@@ -1,17 +1,25 @@
-import {Howl, Howler} from 'howler';
+import { Howl, Howler } from 'howler';
 
 export default class AudioEngine {
   private musicTracks: string[] = [
-    'song1', 'song2', 'song3', 'song4', 'song5', 'song6', 'song7', 'song8', 'song9'
+    'song1',
+    'song2',
+    'song3',
+    'song4',
+    'song5',
+    'song6',
+    'song7',
+    'song8',
+    'song9',
   ];
   private effectInstances: number = 0;
-  private prevSong: {name: string, id: number, song?: Howl} | null = null;
+  private prevSong: { name: string; id: number; song?: Howl } | null = null;
   private pickSong(): string {
-    return this.musicTracks[Math.floor(Math.random()*this.musicTracks.length)];
+    return this.musicTracks[Math.floor(Math.random() * this.musicTracks.length)];
   }
   private loadSong() {
     //@ts-ignore
-    Howler.stop(this.prevSong?.id)
+    Howler.stop(this.prevSong?.id);
     let next = this.pickSong();
     while (next == this.prevSong?.name) {
       next = this.pickSong();
@@ -21,21 +29,21 @@ export default class AudioEngine {
     this.prevSong = {
       name: next,
       id,
-      song
+      song,
     };
   }
   private song(songName: string, vol: number) {
     return new Howl({
       src: [`src/assets/sound/music/${songName}.mp3`],
-      volume: vol
+      volume: vol,
     });
   }
   public effect(effectName: string, vol: number) {
-    if (this.effectInstances > 3) return; 
+    if (this.effectInstances > 3) return;
     this.effectInstances++;
     const effect = new Howl({
       src: [`src/assets/sound/effects/${effectName}`],
-      volume: vol
+      volume: vol,
     });
     effect.play();
     effect.on('end', () => this.effectInstances--);
@@ -44,8 +52,8 @@ export default class AudioEngine {
   public startMenuMusic() {
     const id = this.song('menu', 0.1).play();
     this.prevSong = {
-      name: "menu",
-      id
+      name: 'menu',
+      id,
     };
   }
   public startGameMusic() {
@@ -59,12 +67,10 @@ export default class AudioEngine {
   }
 
   public pauseMusic() {
-    if (this.prevSong && this.prevSong.song != null)
-      this.prevSong.song.pause();
+    if (this.prevSong && this.prevSong.song != null) this.prevSong.song.pause();
   }
   public resumeMusic() {
-    if (this.prevSong && this.prevSong.song != null)
-      this.prevSong.song.play();
+    if (this.prevSong && this.prevSong.song != null) this.prevSong.song.play();
   }
   public clickEffect() {
     this.effect('click.wav', 1);
