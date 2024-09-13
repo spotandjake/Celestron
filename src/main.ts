@@ -165,7 +165,7 @@ const startGame = () => {
     let activeTowerPlacement: StoreItem | null = null;
     // Load Image Helper
     const loadImage = (tex: Texture, path: string) => {
-      textures.set(tex, p5.loadImage(`/src/assets/${path}`));
+      textures.set(tex, p5.loadImage(`${import.meta.env.BASE_URL}/src/assets/${path}`));
     };
     // Preload some stuff
     p5.preload = async function preload() {
@@ -964,7 +964,7 @@ const startGame = () => {
         world.paused = true;
         world.gameOver = true;
         // Send score to lb
-        await fetch('/api/highscore', {
+        await fetch(`${import.meta.env.BASE_URL}/api/highscore`, {
           headers: {
             'Content-Type': 'application/json',
             accept: '*/*',
